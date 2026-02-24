@@ -1,24 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	c "github.com/ragnacron/gogator/internal/config"
+	"github.com/ragnacron/gogator/internal/config"
 )
 
 func main() {
-	config, err := c.Read()
+	c, err := config.Read()
 	logFatalln(err)
 
-	err = config.SetUser("ragnacron")
-	logFatalln(err)
+	s := state{
+		config: &c,
+	}
 
-	config, err = c.Read()
-	logFatalln(err)
+	commands := commands{
+		handlers: make(map[string]func(*state, command) error),
+	}
 
-	fmt.Println(config.DBUrl)
-	fmt.Println(config.CurrentUserName)
+	commands.register("login", handlerLogin)
 }
 
 func logFatalln(err error) {

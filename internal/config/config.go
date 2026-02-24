@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -34,7 +35,7 @@ func Read() (Config, error) {
 
 	path, err := getConfigFilePath()
 	if err != nil {
-		return config, err
+		log.Fatalln(err)
 	}
 
 	data, err := os.ReadFile(path)
