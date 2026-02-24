@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const configFileName = "config.json"
+// const configFileName = "config.json"
 
 type Config struct {
 	DBUrl           string `json:"db_url"`
@@ -56,13 +56,17 @@ func getConfigFilePath() (string, error) {
 		return "", err
 	}
 
-	configPath := filepath.Join(home, ".config", "gogator")
-	err = os.MkdirAll(configPath, 0744)
-	if err != nil {
-		return "", err
-	}
+	// Todo: Revert to this, once the project is done!!!
+	//
+	// configPath := filepath.Join(home, ".config", "gogator")
+	// err = os.MkdirAll(configPath, 0744)
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// filePath := filepath.Join(configPath, configFileName)
 
-	filePath := filepath.Join(configPath, configFileName)
+	filePath := filepath.Join(home, ".gatorconfig.json")
 
 	return filePath, nil
 }
