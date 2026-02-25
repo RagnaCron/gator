@@ -11,7 +11,7 @@ import (
 
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.args) != 1 {
-		return fmt.Errorf("Usage: %s <name>", cmd.name)
+		return fmt.Errorf("usage: %s <name>", cmd.name)
 	}
 
 	user, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
@@ -70,7 +70,7 @@ func hanlderUsers(s *state, cmd command) error {
 		if user.Name == s.config.CurrentUserName {
 			msg = " (current)"
 		}
-		fmt.Printf("* %s%s\n", user.Name, msg)
+		fmt.Printf("* %v%v\n", user.Name, msg)
 	}
 
 	return nil
