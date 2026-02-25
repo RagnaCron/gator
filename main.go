@@ -7,6 +7,10 @@ import (
 	"github.com/ragnacron/gogator/internal/config"
 )
 
+type state struct {
+	config *config.Config
+}
+
 func main() {
 	c, err := config.Read()
 	if err != nil {
