@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"os"
+	"fmt"
 )
 
 func handlerReset(s *state, cmd command) error {
 	err := s.db.Reset(context.Background())
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't delete users: %w", err)
 	}
 
-	os.Exit(0)
+	fmt.Println("Database reset successfully!")
 	return nil
 }

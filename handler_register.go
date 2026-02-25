@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -23,17 +21,21 @@ func handlerRegister(s *state, cmd command) error {
 		Name:      cmd.args[0],
 	})
 	if err != nil {
-		fmt.Printf("%v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("couldn't create user: %w", err)
 	}
 
 	err = s.config.SetUser(user.Name)
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't set current user: %w", err)
 	}
 
 	fmt.Println("User was created!")
-	log.Println(user)
+	printUser(user)
 
 	return nil
+}
+
+func printUser(user database.User) {
+	fmt.Printf(" * ID:      %v\n", user.ID)
+	fmt.Printf(" * Name:    %v\n", user.Name)
 }

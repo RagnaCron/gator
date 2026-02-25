@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 )
 
 func handlerLogin(s *state, cmd command) error {
@@ -14,7 +13,7 @@ func handlerLogin(s *state, cmd command) error {
 
 	user, err := s.db.GetUser(context.Background(), userName)
 	if err != nil {
-		os.Exit(1)
+		return fmt.Errorf("couldn't find user: %w", err)
 	}
 
 	err = s.config.SetUser(user.Name)
