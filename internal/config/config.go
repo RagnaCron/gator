@@ -2,8 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -15,37 +13,28 @@ type Config struct {
 	CurrentUserName string `json:"current_user_name"`
 }
 
-func (c Config) SetUser(userName string) error {
-	if userName == "" {
-		return errors.New("you need to set a user name")
-	}
-
+func (c *Config) SetUser(userName string) error {
 	c.CurrentUserName = userName
-
-	err := write(c)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return write(c)
 }
 
 func Read() (Config, error) {
-	var config Config
-
 	path, err := getConfigFilePath()
 	if err != nil {
-		log.Fatalln(err)
+		return Config{}, err
 	}
 
-	data, err := os.ReadFile(path)
+	file, err := os.Open(path)
 	if err != nil {
-		return config, err
+		return Config{}, err
 	}
+	defer file.Close()
 
-	err = json.Unmarshal(data, &config)
+	decoder := json.NewDecoder(file)
+	config := Config{}
+	err = decoder.Decode(&config)
 	if err != nil {
-		return config, err
+		return Config{}, err
 	}
 
 	return config, nil
@@ -57,33 +46,25 @@ func getConfigFilePath() (string, error) {
 		return "", err
 	}
 
-	// Todo: Revert to this, once the project is done!!!
-	//
-	// configPath := filepath.Join(home, ".config", "gogator")
-	// err = os.MkdirAll(configPath, 0744)
-	// if err != nil {
-	// 	return "", err
-	// }
-	//
-	// filePath := filepath.Join(configPath, configFileName)
-
 	filePath := filepath.Join(home, ".gatorconfig.json")
 
 	return filePath, nil
 }
 
-func write(cfg Config) error {
-	data, err := json.Marshal(cfg)
-	if err != nil {
-		return err
-	}
-
+func write(c *Config) error {
 	path, err := getConfigFilePath()
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(path, data, 0640)
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(c)
 	if err != nil {
 		return err
 	}
