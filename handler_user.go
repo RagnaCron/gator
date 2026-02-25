@@ -55,7 +55,7 @@ func handlerLogin(s *state, cmd command) error {
 	return nil
 }
 
-func hanlderUsers(s *state, cmd command) error {
+func handlerListUsers(s *state, cmd command) error {
 	if len(cmd.args) != 0 {
 		return fmt.Errorf("usage: %s", cmd.name)
 	}
