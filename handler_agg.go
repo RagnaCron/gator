@@ -23,7 +23,7 @@ func handlerAddFeed(s *state, cmd command) error {
 		return fmt.Errorf("usage: %s <name> <url>", cmd.name)
 	}
 
-	user, err := s.db.GetUser(s.config.CurrentUserName)
+	user, err := s.db.GetUser(context.Background(), s.config.CurrentUserName)
 	if err != nil {
 		return fmt.Errorf("couldn't find user: %w", err)
 	}
@@ -35,5 +35,18 @@ func handlerAddFeed(s *state, cmd command) error {
 		Url:       cmd.args[1],
 		UserID:    user.ID,
 	})
+
+	printFeed(feed)
+
+	fmt.Println("Added a new Feed Successfully!")
 	return nil
+}
+
+func printFeed(feed database.Feed) {
+	fmt.Printf("ID: %v\n", feed.ID)
+	fmt.Printf("Name: %v\n", feed.Name)
+	fmt.Printf("URL: %v\n", feed.Url)
+	fmt.Printf("UserID: %v\n", feed.UserID)
+	fmt.Printf("CreatedAt: %v\n", feed.CreatedAt)
+	fmt.Printf("UpdatedAt: %v\n", feed.UpdatedAt)
 }
