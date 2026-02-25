@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"os"
 
@@ -10,9 +9,11 @@ import (
 
 func main() {
 	c, err := config.Read()
-	logFatalln(err)
+	if err != nil {
+		log.Fatalf("error reading config: %v", err)
+	}
 
-	s := state{
+	s := &state{
 		config: &c,
 	}
 
@@ -21,22 +22,15 @@ func main() {
 	}
 	commands.register("login", handlerLogin)
 
-	if len(os.Args) <= 2 {
-		logFatalln(
-			errors.New("missing arguments"),
-		)
+	if len(os.Args) < 2 {
+		log.Fatalf("Usage: cli <command> [args...]")
 	}
 
-	command := command{
-		name: os.Args[1],
-		args: os.Args[2:],
-	}
+	cName := os.Args[1]
+	cArgs := os.Args[2:]
 
-	commands.run(&s, command)
-}
-
-func logFatalln(err error) {
+	err = commands.run(s, command{name: cName, args: cArgs})
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 }
