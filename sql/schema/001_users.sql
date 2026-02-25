@@ -1,9 +1,9 @@
 -- +goose Up 
 CREATE TABLE IF NOT EXISTS users (
-    id INT PRIMARY KEY,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    name TEXT UNIQUE
+    id UUID PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    name TEXT NOT NULL UNIQUE
 );
 
 -- +goose Down
