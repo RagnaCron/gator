@@ -1,13 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/ragnacron/gogator/internal/config"
+	"github.com/ragnacron/gogator/internal/database"
 )
 
 type state struct {
+	db     *database.Queries
 	config *config.Config
 }
 
@@ -21,10 +25,17 @@ func main() {
 		config: &c,
 	}
 
+	db, err := sql.Open("postgres", c.DBUrl)
+	if err != nil {
+		log.Fatalf("error opening database: %v", err)
+	}
+	s.db = database.New(db)
+
 	commands := commands{
 		handlers: make(map[string]func(*state, command) error),
 	}
 	commands.register("login", handlerLogin)
+	commands.register("register", handlerRegister)
 
 	if len(os.Args) < 2 {
 		log.Fatalf("Usage: cli <command> [args...]")
