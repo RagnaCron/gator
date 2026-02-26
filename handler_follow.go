@@ -49,13 +49,36 @@ func handlerFollowing(s *state, cmd command, user database.User) error {
 	}
 
 	if len(follows) == 0 {
-		return fmt.Errorf("No feed follows found for this user.")
+		return nil
 	}
 
 	fmt.Printf("Found %d feed follows for %s:\n", len(follows), user.Name)
 	for _, follow := range follows {
 		fmt.Printf("* %s\n", follow.FeedName)
 	}
+
+	return nil
+}
+
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("usage: %s <url>", cmd.name)
+	}
+
+	feed, err := s.db.GetFeedByUrl(context.Background(), cmd.args[0])
+	if err != nil {
+		return fmt.Errorf("couldn't find feed: %w", err)
+	}
+
+	err = s.db.DeleteFollowFeed(context.Background(), database.DeleteFollowFeedParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("couldn't delete feed follow: %w", err)
+	}
+
+	fmt.Println("Successfully deleted feed follow!")
 
 	return nil
 }
