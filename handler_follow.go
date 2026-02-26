@@ -9,14 +9,9 @@ import (
 	"github.com/ragnacron/gogator/internal/database"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.name)
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.config.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("couldn't find user: %w", err)
 	}
 
 	feed, err := s.db.GetFeedByUrl(context.Background(), cmd.args[0])
@@ -43,12 +38,12 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollowing(s *state, cmd command) error {
+func handlerFollowing(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 0 {
 		return fmt.Errorf("usage: %s", cmd.name)
 	}
 
-	follows, err := s.db.GetFeedFollowsForUser(context.Background(), s.config.CurrentUserName)
+	follows, err := s.db.GetFeedFollowsForUser(context.Background(), user.Name)
 	if err != nil {
 		return fmt.Errorf("couldn't find feed follows: %w", err)
 	}
@@ -57,7 +52,7 @@ func handlerFollowing(s *state, cmd command) error {
 		return fmt.Errorf("No feed follows found for this user.")
 	}
 
-	fmt.Printf("Found %d feed follows for %s:\n", len(follows), s.config.CurrentUserName)
+	fmt.Printf("Found %d feed follows for %s:\n", len(follows), user.Name)
 	for _, follow := range follows {
 		fmt.Printf("* %s\n", follow.FeedName)
 	}
