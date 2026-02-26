@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ragnacron/gogator/internal/database"
+	"github.com/ragnacron/gator/internal/database"
 )
 
 func middlewareLoggedIn(handler func(s *state, cmd command, user database.User) error) func(*state, command) error {

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/ragnacron/gogator/internal/database"
+	"github.com/ragnacron/gator/internal/database"
 )
 
 func handlerRegister(s *state, cmd command) error {

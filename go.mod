@@ -1,4 +1,4 @@
-module github.com/ragnacron/gogator
+module github.com/ragnacron/gator
 
 go 1.25.7
 
