@@ -32,10 +32,10 @@ func handlerFollow(s *state, cmd command) error {
 		FeedID:    feed.ID,
 	})
 	if err != nil {
-		return fmt.Errorf("couldn't created feed follow: %w", err)
+		return fmt.Errorf("couldn't create feed follow: %w", err)
 	}
 
-	fmt.Println("Feed follow created successfully:")
+	fmt.Println("Feed follow created:")
 	printFollow(follow)
 	fmt.Println()
 	fmt.Println("=====================================")
@@ -54,19 +54,18 @@ func handlerFollowing(s *state, cmd command) error {
 	}
 
 	if len(follows) == 0 {
-		return fmt.Errorf("No feed follows found.")
+		return fmt.Errorf("No feed follows found for this user.")
 	}
 
 	fmt.Printf("Found %d feed follows for %s:\n", len(follows), s.config.CurrentUserName)
 	for _, follow := range follows {
-		fmt.Printf("* Feed name:    %s\n", follow.FeedName)
-		fmt.Println("=====================================")
+		fmt.Printf("* %s\n", follow.FeedName)
 	}
 
 	return nil
 }
 
 func printFollow(f database.CreateFeedFollowRow) {
-	fmt.Printf("* Feed name:    %s\n", f.FeedName)
 	fmt.Printf("* User name:    %s\n", f.UserName)
+	fmt.Printf("* Feed name:    %s\n", f.FeedName)
 }
