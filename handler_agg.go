@@ -15,15 +15,14 @@ func handlerAgg(s *state, cmd command) error {
 		return fmt.Errorf("usage: %s <time_duration>", cmd.name)
 	}
 
-	timeBetweenReqs := cmd.args[0]
-
-	timeDuration, err := time.ParseDuration(timeBetweenReqs)
+	timeBetweenReqs, err := time.ParseDuration(cmd.args[0])
 	if err != nil {
-		return fmt.Errorf("couldn't parse time duration")
+		return fmt.Errorf("invalid duration: %w", err)
 	}
 
-	fmt.Printf("Collecting feeds every %s\n", timeBetweenReqs)
-	ticker := time.NewTicker(timeDuration)
+	fmt.Printf("Collecting feeds every %s...\n", timeBetweenReqs)
+
+	ticker := time.NewTicker(timeBetweenReqs)
 	for ; ; <-ticker.C {
 		if err = scrapFeeds(s); err != nil {
 			fmt.Println(err)
@@ -126,6 +125,7 @@ func scrapFeeds(s *state) error {
 		}
 		fmt.Printf("* %s\n", item.Title)
 	}
+	fmt.Printf("Feed %s collected: %v posts found", nextFeed.Name, len(feed.Channel.Item))
 	fmt.Println()
 
 	return nil
