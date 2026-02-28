@@ -10,8 +10,6 @@ import (
 	"github.com/ragnacron/gator/internal/database"
 )
 
-const timeLayout = "Wed 11 Feb 2026 00:00:00 +0000"
-
 func handlerAgg(s *state, cmd command) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("usage: %s <time_duration>", cmd.name)
