@@ -52,14 +52,11 @@ func scrapFeeds(s *state) error {
 	fmt.Printf("Fetched feed %s\n", feed.Channel.Title)
 
 	for _, item := range feed.Channel.Item {
-		a := item.PubDate[0:3]
-		b := item.PubDate[4:]
-		c := a + b
-		fmt.Println(c)
-		parsedTime, err := time.Parse(timeLayout, c)
+		parsedTime, err := time.Parse(time.RFC1123Z, item.PubDate)
 		if err != nil {
 			return err
 		}
+
 		_, err = s.db.CreatePost(context.Background(), database.CreatePostParams{
 			ID:          uuid.New(),
 			CreatedAt:   time.Now().UTC(),
@@ -73,12 +70,7 @@ func scrapFeeds(s *state) error {
 		if err != nil {
 			return fmt.Errorf("couldn't save post: %w", err)
 		}
-		// 	if len(item.Title) == 0 {
-		// 		continue
-		// 	}
-		// 	fmt.Printf("* %s\n", item.Title)
 	}
-	// fmt.Printf("Feed %s collected: %v posts found", nextFeed.Name, len(feed.Channel.Item))
 	fmt.Println("Successfully saved posts!")
 
 	return nil
