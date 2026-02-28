@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/ragnacron/gator/internal/database"
 )
+
+const timeLayout = "Wed 11 Feb 2026 00:00:00 +0000"
 
 func handlerAgg(s *state, cmd command) error {
 	if len(cmd.args) != 1 {
@@ -47,14 +50,36 @@ func scrapFeeds(s *state) error {
 	}
 
 	fmt.Printf("Fetched feed %s\n", feed.Channel.Title)
+
 	for _, item := range feed.Channel.Item {
-		if len(item.Title) == 0 {
-			continue
+		a := item.PubDate[0:3]
+		b := item.PubDate[4:]
+		c := a + b
+		fmt.Println(c)
+		parsedTime, err := time.Parse(timeLayout, c)
+		if err != nil {
+			return err
 		}
-		fmt.Printf("* %s\n", item.Title)
+		_, err = s.db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now().UTC(),
+			UpdatedAt:   time.Now().UTC(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: item.Description,
+			PublishedAt: parsedTime,
+			FeedID:      nextFeed.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("couldn't save post: %w", err)
+		}
+		// 	if len(item.Title) == 0 {
+		// 		continue
+		// 	}
+		// 	fmt.Printf("* %s\n", item.Title)
 	}
-	fmt.Printf("Feed %s collected: %v posts found", nextFeed.Name, len(feed.Channel.Item))
-	fmt.Println()
+	// fmt.Printf("Feed %s collected: %v posts found", nextFeed.Name, len(feed.Channel.Item))
+	fmt.Println("Successfully saved posts!")
 
 	return nil
 }
